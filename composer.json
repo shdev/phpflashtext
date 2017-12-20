@@ -1,0 +1,12 @@
+{
+    "name": "shdev/phpflashtext",
+    "description": "A port of the flashtext python implementation",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Sebastian Holtz",
+            "email": "holtz@make-better.de"
+        }
+    ],
+    "require": {}
+}
