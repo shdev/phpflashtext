@@ -24,7 +24,7 @@ class ExtractorTest extends \PHPUnit_Framework_TestCase
     public function testExtractKeywords()
     {
         foreach ($this->testData as $testId => $testCase) {
-            dump([$testCase['keyword_dict'], $testCase['sentence']]);
+            dump(['keyword_dict' => $testCase['keyword_dict'], 'sentence' => $testCase['sentence'], 'keywords' => $testCase['keywords']]);
             $keywordProcessor = new KeywordProcessor();
             $keywordProcessor->addKeywordsFromAssocArray($testCase['keyword_dict']);
             $keywordsExtracted = $keywordProcessor->extractKeywords($testCase['sentence']);
@@ -35,7 +35,7 @@ class ExtractorTest extends \PHPUnit_Framework_TestCase
     public function testExtractKeywordsCaseSensitive()
     {
         foreach ($this->testData as $testId => $testCase) {
-            dump([$testCase['keyword_dict'], $testCase['sentence']]);
+            dump(['keyword_dict' => $testCase['keyword_dict'], 'sentence' => $testCase['sentence'], 'keywords' => $testCase['keywords_case_sensitive']]);
             $keywordProcessor= new KeywordProcessor(true);
             $keywordProcessor->addKeywordsFromAssocArray($testCase['keyword_dict']);
             $keywordsExtracted = $keywordProcessor->extractKeywords($testCase['sentence']);

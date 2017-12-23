@@ -425,22 +425,24 @@ class KeywordProcessor implements \ArrayAccess
 
                         $idy = $idx + 1;
 
-                        if ($idy < $sentenceLen) {
-                            while ($idy < $sentenceLen) {
-                                $innerChar = $sentence[$idy];
-                                if (!in_array($innerChar, $this->nonWordBoundaries, true) && isset($currentDictContinued[$this->keyword])) {
-                                    $longestSequenceFound = $currentDictContinued[$this->keyword];
-                                    $sequenceEndPos = $idy;
-                                    $isLongerSeqFound = true;
-                                }
-                                if (isset($currentDictContinued[$innerChar])) {
-                                    $currentDictContinued= &$currentDictContinued[$innerChar];
-                                } else {
-                                    break;
-                                }
-                                ++$idy;
+                        $notBroken = true;
+                        while ($idy < $sentenceLen) {
+                            $innerChar = $sentence[$idy];
+                            if (!in_array($innerChar, $this->nonWordBoundaries, true) && isset($currentDictContinued[$this->keyword])) {
+                                $longestSequenceFound = $currentDictContinued[$this->keyword];
+                                $sequenceEndPos = $idy;
+                                $isLongerSeqFound = true;
                             }
-                        } elseif (isset($currentDictContinued[$this->keyword])) {
+                            if (isset($currentDictContinued[$innerChar])) {
+                                $currentDictContinued= &$currentDictContinued[$innerChar];
+                            } else {
+                                $notBroken = true;
+                                break;
+                            }
+                            ++$idy;
+                        }
+
+                        if ($notBroken && isset($currentDictContinued[$this->keyword])) {
                             $longestSequenceFound = $currentDictContinued[$this->keyword];
                             $sequenceEndPos = $idy;
                             $isLongerSeqFound= true;
@@ -535,24 +537,25 @@ class KeywordProcessor implements \ArrayAccess
                         $currentWordContinued = $currentWord;
                         $idy = $idx + 1;
 
-                        if ($idy < $sentenceLen) {
-                            while ($idy < $sentenceLen) {
-                                $innerChar = $sentence[$idy];
-                                $currentWordContinued .= $origSentence[$idy];
-                                if (!in_array($innerChar, $this->nonWordBoundaries, true) && $currentDictContinued[$this->keyword]) {
-                                    $currentWhiteSpace = $innerChar;
-                                    $longestSequenceFound = $currentDictContinued[$this->keyword];
-                                    $sequenceEndPos = $idy;
-                                    $isLongerSeqFound = true;
-                                }
-                                if (isset($currentDictContinued[$innerChar])) {
-                                    $currentDictContinued = &$currentDictContinued[$innerChar];
-                                } else {
-                                    break;
-                                }
-                                ++$idy;
+                        $notBroken = true;
+                        while ($idy < $sentenceLen) {
+                            $innerChar = $sentence[$idy];
+                            $currentWordContinued .= $origSentence[$idy];
+                            if (!in_array($innerChar, $this->nonWordBoundaries, true) && $currentDictContinued[$this->keyword]) {
+                                $currentWhiteSpace = $innerChar;
+                                $longestSequenceFound = $currentDictContinued[$this->keyword];
+                                $sequenceEndPos = $idy;
+                                $isLongerSeqFound = true;
                             }
-                        } elseif (isset($currentDictContinued[$this->keyword])) {
+                            if (isset($currentDictContinued[$innerChar])) {
+                                $currentDictContinued = &$currentDictContinued[$innerChar];
+                            } else {
+                                $notBroken = false;
+                                break;
+                            }
+                            ++$idy;
+                        }
+                        if ($notBroken && isset($currentDictContinued[$this->keyword])) {
                             $currentWhiteSpace = '';
                             $longestSequenceFound = $currentDictContinued[$this->keyword];
                             $sequenceEndPos = $idy;
