@@ -496,6 +496,118 @@ class KeywordProcessor implements \ArrayAccess
 
     public function replaceKeywords($sentence)
     {
-        throw new \RuntimeException('Not implemented');
+        $newSentence = '';
+        if (!$sentence) {
+            return $newSentence;
+        }
+
+        $origSentence= $sentence;
+        if (!$this->caseSensitiv) {
+            $sentence = mb_strtolower($sentence);
+        }
+        $currentWord = '';
+        $currentDict= &$this->keywordTrieDict;
+        $currentWhiteSpace = '';
+        $sequenceEndPos = 0;
+        $idx = 0;
+        $sentenceLen= strlen($sentence);
+
+        while ($idx < $sentenceLen) {
+            $char = $sentence[$idx];
+            $currentWord += $origSentence[$idx];
+
+            if (!in_array($char, $this->nonWordBoundaries, true)) {
+                $currentWhiteSpace = $char;
+
+                if (isset($currentDict[$this->keyword]) || isset($currentDict[$char])) {
+                    # update longest sequence found
+                    $sequenceFound = null;
+                    $longestSequenceFound = null;
+                    $isLongerSeqFound = false;
+                    if (isset($currentDict[$this->keyword])) {
+                        $sequenceFound = $currentDict[$this->keyword];
+                        $longestSequenceFound = $currentDict[$this->keyword];
+                        $sequenceEndPos = $idx;
+                    }
+
+                    if (isset($current_dict[$char])) {
+                        $currentDictContinued = $currentDict[$char];
+                        $currentWordContinued = $currentWord;
+                        $idy = $idx + 1;
+
+                        if ($idy < $sentenceLen) {
+                            while ($idy < $sentenceLen) {
+                                $innerChar = $sentence[$idy];
+                                $currentWordContinued .= $origSentence[$idy];
+                                if (!in_array($innerChar, $this->nonWordBoundaries, true) && $currentDictContinued[$this->keyword]) {
+                                    $currentWhiteSpace = $innerChar;
+                                    $longestSequenceFound = $currentDictContinued[$this->keyword];
+                                    $sequenceEndPos = $idy;
+                                    $isLongerSeqFound = true;
+                                }
+                                if (isset($currentDictContinued[$innerChar])) {
+                                    $currentDictContinued = &$currentDictContinued[$innerChar];
+                                } else {
+                                    break;
+                                }
+                                ++$idy;
+                            }
+                        } elseif (isset($currentDictContinued[$this->keyword])) {
+                            $currentWhiteSpace = '';
+                            $longestSequenceFound = $currentDictContinued[$this->keyword];
+                            $sequenceEndPos = $idy;
+                            $isLongerSeqFound = true;
+                        }
+                        if ($isLongerSeqFound) {
+                            $idx = $sequenceEndPos;
+                            $currentWord = $currentWordContinued;
+                        }
+                    }
+
+                    $currentDict = &$this->keywordTrieDict;
+                    if ($longestSequenceFound) {
+                        $newSentence .= $longestSequenceFound . $currentWhiteSpace;
+                        $currentWord = '';
+                        $currentWhiteSpace = '';
+                    } else {
+                        $newSentence .= $currentWord;
+                        $currentWord = '';
+                        $currentWhiteSpace = '';
+                    }
+                } else {
+                    $currentDict = &$this->keywordTrieDict;
+                    $newSentence .= $currentWord;
+                    $currentWord = '';
+                    $currentWhiteSpace = '';
+                }
+            } elseif (isset($currentDict[$char])) {
+                $currentDict = &$currentDict[$char];
+            } else {
+                $currentDict = &$this->keywordTrieDict;
+                $idy = $idx + 1;
+                while ($idy < $sentenceLen) {
+                    $char = $sentence[$idy];
+                    $currentWord .= $origSentence[$idy];
+                    if (!in_array($char, $this->nonWordBoundaries, true)) {
+                        break;
+                    }
+                    ++$idy;
+                }
+                $idx = $idy;
+                $newSentence .= $currentWord;
+                $currentWord = '';
+                $currentWhiteSpace = '';
+            }
+
+
+            if (($idx + 1) >= $sentenceLen) {
+                if (isset($currentDict[$this->keyword])) {
+                    $sequenceFound = $currentDict[$this->keyword];
+                    $newSentence .= $sequenceFound;
+                }
+            }
+            ++$idx;
+        }
+        return $newSentence;
     }
 }
