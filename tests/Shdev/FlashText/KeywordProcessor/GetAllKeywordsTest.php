@@ -19,8 +19,6 @@ class GetAllKeywordsTest extends \PHPUnit_Framework_TestCase
         $keywordProcessor->addKeyword('colour', 'color');
         $keywordProcessor->addKeyword('j2ee', 'Java');
 
-        dump($keywordProcessor);
-
         $this->assertEquals(['colour' => 'color', 'j2ee' => 'Java'], $keywordProcessor->getAllKeywords(), 'get_all_keywords didn\'t match expected results.');
     }
 
