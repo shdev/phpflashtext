@@ -436,7 +436,7 @@ class KeywordProcessor implements \ArrayAccess
                             if (isset($currentDictContinued[$innerChar])) {
                                 $currentDictContinued= &$currentDictContinued[$innerChar];
                             } else {
-                                $notBroken = true;
+                                $notBroken = false;
                                 break;
                             }
                             ++$idy;
