@@ -42,21 +42,19 @@ class DictionaryLoadingTest extends \PHPUnit_Framework_TestCase
         $keywordAssocArray = [
             'java'               => ['java_2e', 'java programing'],
             'product management' => ['product management techniques', 'product management'],
-            'begin'              => ['begin'],
-            'end'                => ['end'],
         ];
 
         $keywordProcessor->addKeywordsFromAssocArray($keywordAssocArray);
 
-        $sentence = 'begin I know java_2e and product management techniques end';
+        $sentence = 'I know java_2e and product management techniques';
 
         $keywordsExtracted= $keywordProcessor->extractKeywords($sentence);
 
-        $this->assertEquals(['begin', 'java', 'product management', 'end'], $keywordsExtracted,
+        $this->assertEquals(['java', 'product management'], $keywordsExtracted,
             'Failed file format one test');
 
         $sentenceNew= $keywordProcessor->replaceKeywords($sentence);
-//        $this->assertEquals('I know java and product management', $sentenceNew,
-//            'Failed file format one test');
+        $this->assertEquals('I know java and product management', $sentenceNew,
+            'Failed file format one test');
     }
 }
