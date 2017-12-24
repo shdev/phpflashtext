@@ -516,7 +516,7 @@ class KeywordProcessor implements \ArrayAccess
 
         while ($idx < $sentenceLen) {
             $char = $sentence[$idx];
-            $currentWord += $origSentence[$idx];
+            $currentWord .= $origSentence[$idx];
 
             if (!in_array($char, $this->nonWordBoundaries, true)) {
                 $currentWhiteSpace = $char;
@@ -532,7 +532,7 @@ class KeywordProcessor implements \ArrayAccess
                         $sequenceEndPos = $idx;
                     }
 
-                    if (isset($current_dict[$char])) {
+                    if (isset($currentDict[$char])) {
                         $currentDictContinued = $currentDict[$char];
                         $currentWordContinued = $currentWord;
                         $idy = $idx + 1;
