@@ -10,7 +10,7 @@ namespace Shdev\FlashText;
 
 class KeywordProcessor
 {
-    const INIT_NON_WORD_BOUNDARIES = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZäüöÄÜÖßèìùàÈÌÙÀ';
+    const INIT_NON_WORD_BOUNDARIES = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZäüöÄÜÖßèìùàÈÌÙÀ_';
 
     const TREE_LEAF = '_keyword_';
 
