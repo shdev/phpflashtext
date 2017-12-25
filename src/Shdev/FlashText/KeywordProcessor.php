@@ -221,15 +221,12 @@ class KeywordProcessor
     /**
      * @param $keywordFile
      * @return $this
-     * @throws FileNotFoundException
      * @throws FileReadException
      */
     public function addKeywordFromFile($keywordFile)
     {
-        if (!is_file($keywordFile)) {
-            throw new FileNotFoundException(sprintf('File \'%s\' not found.', $keywordFile));
-        }
-        $fileContent = file_get_contents($keywordFile);
+
+        $fileContent = @file_get_contents($keywordFile);
 
         if (false === $fileContent) {
             throw new FileReadException(sprintf('Error during reading file \'%s\'.', $keywordFile));
