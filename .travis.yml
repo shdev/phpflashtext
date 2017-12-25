@@ -14,3 +14,4 @@ install:
 
 script:
   - vendor/bin/phpunit tests/Shdev/FlashText/KeywordProcessor/
+  - php tests/Shdev/FlashText/flashtext_vs_regex.php
