@@ -17,9 +17,6 @@ class KeywordProcessor implements \ArrayAccess
     private $keyword = '_keyword_';
 
     /** @var string[] */
-    private $whiteSpaceChars = ['.', "\t", "\n", "\a", ' ', ','];
-
-    /** @var string[] */
     private $nonWordBoundaries = [
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '_',
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
@@ -437,7 +434,6 @@ class KeywordProcessor implements \ArrayAccess
                     $longestSequenceFound= null;
                     $isLongerSeqFound= false;
                     if (isset($currentDict[$this->keyword])) {
-                        $sequenceFound= $currentDict[$this->keyword];
                         $longestSequenceFound = $currentDict[$this->keyword];
                         $sequenceEndPos = $idx;
                     }
@@ -534,7 +530,6 @@ class KeywordProcessor implements \ArrayAccess
         }
         $currentWord = '';
         $currentDict= &$this->keywordTrieDict;
-        $currentWhiteSpace = '';
         $sequenceEndPos = 0;
         $idx = 0;
         $sentenceLen= strlen($sentence);
@@ -547,12 +542,10 @@ class KeywordProcessor implements \ArrayAccess
                 $currentWhiteSpace = $char;
 
                 if (isset($currentDict[$this->keyword]) || isset($currentDict[$char])) {
-                    # update longest sequence found
                     $sequenceFound = null;
                     $longestSequenceFound = null;
                     $isLongerSeqFound = false;
                     if (isset($currentDict[$this->keyword])) {
-                        $sequenceFound = $currentDict[$this->keyword];
                         $longestSequenceFound = $currentDict[$this->keyword];
                         $sequenceEndPos = $idx;
                     }
@@ -596,17 +589,14 @@ class KeywordProcessor implements \ArrayAccess
                     if ($longestSequenceFound) {
                         $newSentence .= $longestSequenceFound . $currentWhiteSpace;
                         $currentWord = '';
-                        $currentWhiteSpace = '';
                     } else {
                         $newSentence .= $currentWord;
                         $currentWord = '';
-                        $currentWhiteSpace = '';
                     }
                 } else {
                     $currentDict = &$this->keywordTrieDict;
                     $newSentence .= $currentWord;
                     $currentWord = '';
-                    $currentWhiteSpace = '';
                 }
             } elseif (isset($currentDict[$char])) {
                 $currentDict = &$currentDict[$char];
@@ -624,10 +614,8 @@ class KeywordProcessor implements \ArrayAccess
                 $idx = $idy;
                 $newSentence .= $currentWord;
                 $currentWord = '';
-                $currentWhiteSpace = '';
             }
-
-
+            
             if (($idx + 1) >= $sentenceLen) {
                 if (isset($currentDict[$this->keyword])) {
                     $sequenceFound = $currentDict[$this->keyword];
