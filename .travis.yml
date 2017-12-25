@@ -9,9 +9,13 @@ php:
 git:
   depth: 1
 
+notifications:
+  email:
+    - mail-github@sh-dev.de
+
 install:
   - composer install
 
 script:
-  - vendor/bin/phpunit tests/Shdev/FlashText/KeywordProcessor/
+  - vendor/bin/phpunit --no-coverage tests/Shdev/FlashText/KeywordProcessor/
   - php tests/Shdev/FlashText/flashtext_vs_regex.php

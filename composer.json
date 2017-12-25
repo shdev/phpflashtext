@@ -1,5 +1,6 @@
 {
     "name": "shdev/phpflashtext",
+    "license": "MIT",
     "description": "A port of the flashtext python implementation",
     "type": "library",
     "authors": [

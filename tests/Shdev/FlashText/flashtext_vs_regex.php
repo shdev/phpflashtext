@@ -12,6 +12,7 @@ const DOCUMENT_COUNT = 100;
 const WORDS_PER_DOCUMENT_COUNT = 10000;
 
 const KEYWORD_STEPS = [10, 50, 100, 200, 300, 400, 500, 1000];
+const KEYWORD_CHUNK_SIZE = 5;
 require __DIR__.'/../../../vendor/autoload.php';
 
 use Symfony\Component\Stopwatch\Stopwatch;
@@ -70,7 +71,7 @@ foreach ($documents as $index => $document) {
     $uniqueWords = array_values(array_unique($document));
     $keywordPerDocument[$index] = [];
     foreach (KEYWORD_STEPS as $keywordStep) {
-        $keywordChunks = array_chunk(array_slice($uniqueWords, 0, $keywordStep * 5), 5);
+        $keywordChunks = array_chunk(array_slice($uniqueWords, 0, $keywordStep * KEYWORD_CHUNK_SIZE), KEYWORD_CHUNK_SIZE);
 
         $keywordPerDocument[$index][$keywordStep] = [];
 
