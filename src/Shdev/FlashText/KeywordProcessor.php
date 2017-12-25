@@ -146,6 +146,10 @@ class KeywordProcessor implements \ArrayAccess
         return $status;
     }
 
+    /**
+     * @param $keyword
+     * @return bool
+     */
     public function delItem($keyword)
     {
         $status = false;
@@ -161,18 +165,18 @@ class KeywordProcessor implements \ArrayAccess
             $chars = str_split($keyword);
             foreach ($chars as $char) {
                 if (isset($currentDict[$char])) {
-                    $characterTrieList[] = [$char, $currentDict];
+                    $characterTrieList[] = [$char, &$currentDict];
                     $currentDict = &$currentDict[$char];
                 }
             }
 
             if (isset($currentDict[$this->keyword])) {
-                $characterTrieList[] = [$this->keywordTrieDict, &$currentDict];
+                $characterTrieList[] = [$this->keyword, &$currentDict];
                 $characterTrieList = array_reverse($characterTrieList);
 
                 foreach ($characterTrieList as $item) {
-                    list($keyToRemove, $dictPointer) = $item;
-
+                    $keyToRemove = $item[0];
+                    $dictPointer = &$item[1];
                     if (1 === count(array_keys($dictPointer))) {
                         unset($dictPointer[$keyToRemove]);
                     } else {
@@ -231,14 +235,31 @@ class KeywordProcessor implements \ArrayAccess
         return $this->delItem($keyword);
     }
 
+    /**
+     * @param $word
+     * @return null|string
+     */
     public function getKeyword($word)
     {
         return $this->getItem($word);    
     }
 
+    /**
+     * @param $keywordFile
+     * @return $this
+     * @throws FileNotFoundException
+     * @throws FileReadException
+     */
     public function addKeywordFromFile($keywordFile)
     {
+        if (!is_file($keywordFile)) {
+            throw new FileNotFoundException(sprintf('File \'%s\' not found.', $keywordFile));
+        }
         $fileContent = file_get_contents($keywordFile);
+
+        if (false === $fileContent) {
+            throw new FileReadException(sprintf('Error during reading file \'%s\'.', $keywordFile));
+        }
         $lines = explode(PHP_EOL, $fileContent);
 
         foreach ($lines as $line) {
@@ -279,7 +300,7 @@ class KeywordProcessor implements \ArrayAccess
     public function removeKeywordsFromAssocArray(array $array)
     {
         foreach ($array as $cleanName => $keywords) {
-            foreach ((array)$keywords as $keyword) {
+            foreach ((array) $keywords as $keyword) {
                 $this->removeKeyword($keyword);
             }
         }
@@ -496,6 +517,10 @@ class KeywordProcessor implements \ArrayAccess
         return array_map(function ($value) { return $value[0]; }, $keywordsExtracted);
     }
 
+    /**
+     * @param $sentence
+     * @return string
+     */
     public function replaceKeywords($sentence)
     {
         $newSentence = '';
@@ -541,7 +566,7 @@ class KeywordProcessor implements \ArrayAccess
                         while ($idy < $sentenceLen) {
                             $innerChar = $sentence[$idy];
                             $currentWordContinued .= $origSentence[$idy];
-                            if (!in_array($innerChar, $this->nonWordBoundaries, true) && $currentDictContinued[$this->keyword]) {
+                            if (!in_array($innerChar, $this->nonWordBoundaries, true) && isset($currentDictContinued[$this->keyword])) {
                                 $currentWhiteSpace = $innerChar;
                                 $longestSequenceFound = $currentDictContinued[$this->keyword];
                                 $sequenceEndPos = $idy;
@@ -613,4 +638,14 @@ class KeywordProcessor implements \ArrayAccess
         }
         return $newSentence;
     }
+
+    /**
+     * @return array
+     */
+    public function getKeywordTrieDict()
+    {
+        return $this->keywordTrieDict;
+    }
+
+
 }
