@@ -615,7 +615,7 @@ class KeywordProcessor implements \ArrayAccess
                 $newSentence .= $currentWord;
                 $currentWord = '';
             }
-            
+
             if (($idx + 1) >= $sentenceLen) {
                 if (isset($currentDict[$this->keyword])) {
                     $sequenceFound = $currentDict[$this->keyword];
