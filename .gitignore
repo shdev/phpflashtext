@@ -64,3 +64,4 @@ fabric.properties
 # End of https://www.gitignore.io/api/phpstorm+all
 var/logs/phpunit
 vendor
+composer.lock
