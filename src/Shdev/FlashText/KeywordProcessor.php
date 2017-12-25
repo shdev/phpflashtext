@@ -8,8 +8,10 @@
 
 namespace Shdev\FlashText;
 
-class KeywordProcessor implements \ArrayAccess
+class KeywordProcessor
 {
+    const INIT_NON_WORD_BOUNDARIES = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZäüöÄÜÖßèìùàÈÌÙÀ';
+
     /** @var bool */
     private $caseSensitiv;
 
@@ -17,13 +19,7 @@ class KeywordProcessor implements \ArrayAccess
     private $keyword = '_keyword_';
 
     /** @var string[] */
-    private $nonWordBoundaries = [
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '_',
-        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
-        'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
-        't', 'u', 'v', 'w', 'x', 'y', 'z',
-    ];
+    private $nonWordBoundaries;
 
     /** @var array */
     private $keywordTrieDict = [];
@@ -39,6 +35,7 @@ class KeywordProcessor implements \ArrayAccess
     public function __construct($caseSensitiv = false)
     {
         $this->caseSensitiv = $caseSensitiv;
+        $this->nonWordBoundaries = str_split(self::INIT_NON_WORD_BOUNDARIES);
     }
 
     /**
@@ -76,41 +73,45 @@ class KeywordProcessor implements \ArrayAccess
     }
 
     /**
-     * @param $word
-     *
-     * @return string|null
+     * @return string[]
      */
-    public function getItem($word)
+    public function getNonWordBoundaries()
     {
-        if (!$this->caseSensitiv) {
-            $word = mb_strtolower($word);
-        }
-        $currentDict = $this->keywordTrieDict;
-        $lenCovered = 0;
-        $chars = str_split($word);
-        foreach ($chars as $char) {
-            if (isset($currentDict[$char])) {
-                $currentDict = $currentDict[$char];
-                ++$lenCovered;
-            } else {
-                break;
-            }
-        }
-
-        if (isset($currentDict[$this->keyword]) && $lenCovered === strlen($word)) {
-            return $currentDict[$this->keyword];
-        }
-
-        return null;
+        return $this->nonWordBoundaries;
     }
 
     /**
-     * @param string      $keyword
-     * @param null|string $cleanName
-     *
+     * @param string|string[] $nonWordBoundaries
+     * @return KeywordProcessor
+     */
+    public function setNonWordBoundaries($nonWordBoundaries)
+    {
+        if (is_string($nonWordBoundaries)) {
+            $this->nonWordBoundaries = str_split($nonWordBoundaries);
+        } else {
+            $this->nonWordBoundaries = $nonWordBoundaries;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $nonWordBoundary
+     * @return KeywordProcessor
+     */
+    public function addNonWordBoundaries($nonWordBoundary)
+    {
+        $this->nonWordBoundaries[] = $nonWordBoundary;
+
+        return $this;
+    }
+
+    /**
+     * @param string $keyword
+     * @param string|null $cleanName
      * @return bool
      */
-    public function setItem($keyword, $cleanName = null)
+    public function addKeyword($keyword, $cleanName = null)
     {
         $status = false;
 
@@ -144,10 +145,10 @@ class KeywordProcessor implements \ArrayAccess
     }
 
     /**
-     * @param $keyword
+     * @param string $keyword
      * @return bool
      */
-    public function delItem($keyword)
+    public function removeKeyword($keyword)
     {
         $status = false;
 
@@ -190,55 +191,32 @@ class KeywordProcessor implements \ArrayAccess
         return $status;
     }
 
-
-    /**
-     * @param string[] $nonWordBoundaries
-     * @return KeywordProcessor
-     */
-    public function setNonWordBoundaries($nonWordBoundaries)
-    {
-        $this->nonWordBoundaries = $nonWordBoundaries;
-
-        return $this;
-    }
-
-    /**
-     * @param string $nonWordBoundary
-     * @return KeywordProcessor
-     */
-    public function addNonWordBoundaries($nonWordBoundary)
-    {
-        $this->nonWordBoundaries[] = $nonWordBoundary;
-
-        return $this;
-    }
-
-    /**
-     * @param string $keyword
-     * @param string|null $cleanName
-     * @return bool
-     */
-    public function addKeyword($keyword, $cleanName = null)
-    {
-        return $this->setItem($keyword, $cleanName);
-    }
-
-    /**
-     * @param string $keyword
-     * @return bool
-     */
-    public function removeKeyword($keyword)
-    {
-        return $this->delItem($keyword);
-    }
-
     /**
      * @param $word
      * @return null|string
      */
     public function getKeyword($word)
     {
-        return $this->getItem($word);    
+        if (!$this->caseSensitiv) {
+            $word = mb_strtolower($word);
+        }
+        $currentDict = $this->keywordTrieDict;
+        $lenCovered = 0;
+        $chars = str_split($word);
+        foreach ($chars as $char) {
+            if (isset($currentDict[$char])) {
+                $currentDict = $currentDict[$char];
+                ++$lenCovered;
+            } else {
+                break;
+            }
+        }
+
+        if (isset($currentDict[$this->keyword]) && $lenCovered === strlen($word)) {
+            return $currentDict[$this->keyword];
+        }
+
+        return null;
     }
 
     /**
@@ -332,12 +310,20 @@ class KeywordProcessor implements \ArrayAccess
     }
 
     /**
+     * @return string[]
+     */
+    public function getAllKeywords()
+    {
+        return $this->getAllKeywordsRecursive();
+    }
+
+    /**
      * @param string $termSoFar
      * @param string[]|null $currentDict
      *
      * @return string[]
      */
-    public function getAllKeywords($termSoFar = '', array &$currentDict = null)
+    private function getAllKeywordsRecursive($termSoFar = '', array &$currentDict = null)
     {
         $termPresent = [];
 
@@ -352,7 +338,7 @@ class KeywordProcessor implements \ArrayAccess
             if ($this->keyword === $key) {
                 $termPresent[$termSoFar] = $value;
             } else {
-                $subValues = $this->getAllKeywords($termSoFar . $key, $currentDict[$key]);
+                $subValues = $this->getAllKeywordsRecursive($termSoFar . $key, $currentDict[$key]);
                 foreach ($subValues as $subKey => $subValue) {
                     $termPresent[$subKey] = $subValue;
                 }
@@ -360,47 +346,6 @@ class KeywordProcessor implements \ArrayAccess
         }
 
         return $termPresent;
-    }
-
-    /**
-     * @param string $word
-     *
-     * @return bool
-     */
-    public function offsetExists($word)
-    {
-        return $this->contains($word);
-    }
-
-    /**
-     * @param string $word
-     *
-     * @return mixed|null|string
-     */
-    public function offsetGet($word)
-    {
-        return $this->getItem($word);
-    }
-
-    /**
-     * @param string $keyword
-     * @param string $cleanName
-     *
-     * @return bool|void
-     */
-    public function offsetSet($keyword, $cleanName)
-    {
-        $this->setItem($keyword, $cleanName);
-    }
-
-    /**
-     * @param string $word
-     *
-     * @return bool
-     */
-    public function offsetUnset($word)
-    {
-        return $this->delItem($word);
     }
 
     /**
