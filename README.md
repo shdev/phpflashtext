@@ -51,3 +51,26 @@ $sentenceNew = $keywordProcessor->replaceKeywords($sentence);
 // $sentenceNew = 'I know java and product management';
 
 ```
+
+## Citation
+
+
+The original paper published on `FlashText algorithm <https://arxiv.org/abs/1711.00046>`.
+
+```tex
+    @ARTICLE{2017arXiv171100046S,
+       author = {{Singh}, V.},
+        title = "{Replace or Retrieve Keywords In Documents at Scale}",
+      journal = {ArXiv e-prints},
+    archivePrefix = "arXiv",
+       eprint = {1711.00046},
+     primaryClass = "cs.DS",
+     keywords = {Computer Science - Data Structures and Algorithms},
+         year = 2017,
+        month = oct,
+       adsurl = {http://adsabs.harvard.edu/abs/2017arXiv171100046S},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+    }
+
+```
+The article published on `Medium freeCodeCamp <https://medium.freecodecamp.org/regex-was-taking-5-days-flashtext-does-it-in-15-minutes-55f04411025f>`.
