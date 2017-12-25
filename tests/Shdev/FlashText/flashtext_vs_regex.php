@@ -114,9 +114,9 @@ foreach (KEYWORD_STEPS as $keywordStep) {
         $pattern = '/'.implode('|', $pattern).'/i';
         $sentence = implode(' ', $document);
         // warmup then pattern
-        preg_match_all($pattern, '23423', $matches);
+        @preg_match_all($pattern, '23423', $matches);
         $stopwatch->start('regex', $keywordStep);
-        preg_match_all($pattern, $sentence, $matches);
+        @preg_match_all($pattern, $sentence, $matches);
         $event = $stopwatch->stop('regex', $keywordStep);
     }
     $stopwatch->stopSection($keywordStep);
