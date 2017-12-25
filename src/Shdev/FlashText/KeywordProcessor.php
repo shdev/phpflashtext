@@ -12,11 +12,10 @@ class KeywordProcessor
 {
     const INIT_NON_WORD_BOUNDARIES = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZäüöÄÜÖßèìùàÈÌÙÀ';
 
+    const TREE_LEAF = '_keyword_';
+
     /** @var bool */
     private $caseSensitiv;
-
-    /** @var string */
-    private $keyword = '_keyword_';
 
     /** @var string[] */
     private $nonWordBoundaries;
@@ -35,7 +34,7 @@ class KeywordProcessor
     public function __construct($caseSensitiv = false)
     {
         $this->caseSensitiv = $caseSensitiv;
-        $this->nonWordBoundaries = str_split(self::INIT_NON_WORD_BOUNDARIES);
+        $this->setNonWordBoundaries(self::INIT_NON_WORD_BOUNDARIES);
     }
 
     /**
@@ -69,7 +68,7 @@ class KeywordProcessor
             }
         }
 
-        return isset($currentDict[$this->keyword]) && $lenCovered === strlen($word);
+        return isset($currentDict[self::TREE_LEAF]) && $lenCovered === strlen($word);
     }
 
     /**
@@ -87,10 +86,10 @@ class KeywordProcessor
     public function setNonWordBoundaries($nonWordBoundaries)
     {
         if (is_string($nonWordBoundaries)) {
-            $this->nonWordBoundaries = str_split($nonWordBoundaries);
-        } else {
-            $this->nonWordBoundaries = $nonWordBoundaries;
+            $nonWordBoundaries = str_split($nonWordBoundaries);
         }
+
+        $this->nonWordBoundaries = $nonWordBoundaries;
 
         return $this;
     }
@@ -133,12 +132,12 @@ class KeywordProcessor
                 $currentDict = &$currentDict[$char];
             }
 
-            if (!isset($currentDict[$this->keyword])) {
+            if (!isset($currentDict[self::TREE_LEAF])) {
                 $status = true;
                 ++$this->termsInTrie;
             }
 
-            $currentDict[$this->keyword] = $cleanName;
+            $currentDict[self::TREE_LEAF ] = $cleanName;
         }
 
         return $status;
@@ -168,8 +167,8 @@ class KeywordProcessor
                 }
             }
 
-            if (isset($currentDict[$this->keyword])) {
-                $characterTrieList[] = [$this->keyword, &$currentDict];
+            if (isset($currentDict[self::TREE_LEAF])) {
+                $characterTrieList[] = [self::TREE_LEAF, &$currentDict];
                 $characterTrieList = array_reverse($characterTrieList);
 
                 foreach ($characterTrieList as $item) {
@@ -212,8 +211,8 @@ class KeywordProcessor
             }
         }
 
-        if (isset($currentDict[$this->keyword]) && $lenCovered === strlen($word)) {
-            return $currentDict[$this->keyword];
+        if (isset($currentDict[self::TREE_LEAF]) && $lenCovered === strlen($word)) {
+            return $currentDict[self::TREE_LEAF];
         }
 
         return null;
@@ -335,7 +334,7 @@ class KeywordProcessor
         }
 
         foreach ($currentDict as $key => $value) {
-            if ($this->keyword === $key) {
+            if (self::TREE_LEAF === $key) {
                 $termPresent[$termSoFar] = $value;
             } else {
                 $subValues = $this->getAllKeywordsRecursive($termSoFar . $key, $currentDict[$key]);
@@ -374,12 +373,12 @@ class KeywordProcessor
         while ($idx < $sentenceLen) {
             $char = $sentence[$idx];
             if (!in_array($char, $this->nonWordBoundaries, true)) {
-                if (isset($currentDict[$char]) || isset($currentDict[$this->keyword])) {
+                if (isset($currentDict[$char]) || isset($currentDict[self::TREE_LEAF ])) {
                     $sequenceFound= null;
                     $longestSequenceFound= null;
                     $isLongerSeqFound= false;
-                    if (isset($currentDict[$this->keyword])) {
-                        $longestSequenceFound = $currentDict[$this->keyword];
+                    if (isset($currentDict[self::TREE_LEAF])) {
+                        $longestSequenceFound = $currentDict[self::TREE_LEAF ];
                         $sequenceEndPos = $idx;
                     }
                     if (isset($currentDict[$char])) {
@@ -390,8 +389,8 @@ class KeywordProcessor
                         $notBroken = true;
                         while ($idy < $sentenceLen) {
                             $innerChar = $sentence[$idy];
-                            if (!in_array($innerChar, $this->nonWordBoundaries, true) && isset($currentDictContinued[$this->keyword])) {
-                                $longestSequenceFound = $currentDictContinued[$this->keyword];
+                            if (!in_array($innerChar, $this->nonWordBoundaries, true) && isset($currentDictContinued[self::TREE_LEAF ])) {
+                                $longestSequenceFound = $currentDictContinued[self::TREE_LEAF];
                                 $sequenceEndPos = $idy;
                                 $isLongerSeqFound = true;
                             }
@@ -404,8 +403,8 @@ class KeywordProcessor
                             ++$idy;
                         }
 
-                        if ($notBroken && isset($currentDictContinued[$this->keyword])) {
-                            $longestSequenceFound = $currentDictContinued[$this->keyword];
+                        if ($notBroken && isset($currentDictContinued[self::TREE_LEAF])) {
+                            $longestSequenceFound = $currentDictContinued[self::TREE_LEAF];
                             $sequenceEndPos = $idy;
                             $isLongerSeqFound= true;
                         }
@@ -439,8 +438,8 @@ class KeywordProcessor
                 $idx = $idy;
             }
             if (($idx + 1) >= $sentenceLen) {
-                if (isset($currentDict[$this->keyword])) {
-                    $sequenceFound = $currentDict[$this->keyword];
+                if (isset($currentDict[self::TREE_LEAF])) {
+                    $sequenceFound = $currentDict[self::TREE_LEAF];
                     $keywordsExtracted[] = [$sequenceFound, $sequenceStartPos, $sentenceLen];
                 }
             }
@@ -486,12 +485,12 @@ class KeywordProcessor
             if (!in_array($char, $this->nonWordBoundaries, true)) {
                 $currentWhiteSpace = $char;
 
-                if (isset($currentDict[$this->keyword]) || isset($currentDict[$char])) {
+                if (isset($currentDict[self::TREE_LEAF]) || isset($currentDict[$char])) {
                     $sequenceFound = null;
                     $longestSequenceFound = null;
                     $isLongerSeqFound = false;
-                    if (isset($currentDict[$this->keyword])) {
-                        $longestSequenceFound = $currentDict[$this->keyword];
+                    if (isset($currentDict[self::TREE_LEAF])) {
+                        $longestSequenceFound = $currentDict[self::TREE_LEAF ];
                         $sequenceEndPos = $idx;
                     }
 
@@ -504,9 +503,9 @@ class KeywordProcessor
                         while ($idy < $sentenceLen) {
                             $innerChar = $sentence[$idy];
                             $currentWordContinued .= $origSentence[$idy];
-                            if (!in_array($innerChar, $this->nonWordBoundaries, true) && isset($currentDictContinued[$this->keyword])) {
+                            if (!in_array($innerChar, $this->nonWordBoundaries, true) && isset($currentDictContinued[self::TREE_LEAF ])) {
                                 $currentWhiteSpace = $innerChar;
-                                $longestSequenceFound = $currentDictContinued[$this->keyword];
+                                $longestSequenceFound = $currentDictContinued[self::TREE_LEAF];
                                 $sequenceEndPos = $idy;
                                 $isLongerSeqFound = true;
                             }
@@ -518,9 +517,9 @@ class KeywordProcessor
                             }
                             ++$idy;
                         }
-                        if ($notBroken && isset($currentDictContinued[$this->keyword])) {
+                        if ($notBroken && isset($currentDictContinued[self::TREE_LEAF])) {
                             $currentWhiteSpace = '';
-                            $longestSequenceFound = $currentDictContinued[$this->keyword];
+                            $longestSequenceFound = $currentDictContinued[self::TREE_LEAF];
                             $sequenceEndPos = $idy;
                             $isLongerSeqFound = true;
                         }
@@ -562,8 +561,8 @@ class KeywordProcessor
             }
 
             if (($idx + 1) >= $sentenceLen) {
-                if (isset($currentDict[$this->keyword])) {
-                    $sequenceFound = $currentDict[$this->keyword];
+                if (isset($currentDict[self::TREE_LEAF])) {
+                    $sequenceFound = $currentDict[self::TREE_LEAF];
                     $newSentence .= $sequenceFound;
                 }
             }
