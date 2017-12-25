@@ -1,5 +1,5 @@
 
-#Flashtext for PHP
+# Flashtext for PHP
 
 
 [![Build Status](https://travis-ci.org/shdev/phpflashtext.svg?branch=master)](https://travis-ci.org/shdev/phpflashtext)
