@@ -23,13 +23,13 @@ class CircularTest extends \PHPUnit_Framework_TestCase
 
         $keywordProcessor->addKeywordsFromAssocArray($keywordAssocArray);
 
-        $sentence = 'I know java but I love php';
+        $sentence = 'I know java but I love php and java hugs php.';
 
         $keywordsExtracted = $keywordProcessor->extractKeywords($sentence);
 
-        $this->assertEquals(['java', 'php'], $keywordsExtracted);
+        $this->assertEquals(['php', 'java', 'php', 'java'], $keywordsExtracted);
 
         $sentenceNew = $keywordProcessor->replaceKeywords($sentence);
-        $this->assertEquals('I know php but I love java', $sentenceNew);
+        $this->assertEquals('I know php but I love java and php hugs java.', $sentenceNew);
     }
 }
