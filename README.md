@@ -2,7 +2,7 @@
 # Flashtext for PHP
 
 
-[![Build Status](https://travis-ci.org/shdev/phpflashtext.svg?branch=master)](https://travis-ci.org/shdev/phpflashtext)
+[![Build Status](https://travis-ci.org/shdev/phpflashtext.svg?branch=master)](https://travis-ci.org/shdev/phpflashtext) [![Coverage Status](https://coveralls.io/repos/github/shdev/phpflashtext/badge.svg?branch=master)](https://coveralls.io/github/shdev/phpflashtext?branch=master)
 
 It's a port from the wonderful python project https://github.com/vi3k6i5/flashtext,
 for internals of the algorithm look there. 

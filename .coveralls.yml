@@ -1,0 +1,6 @@
+
+repo_token: your_token # should be kept secret!
+service_name: travis-ci
+
+coverage_clover: var/logs/phpunit/clover.xml
+json_path: var/logs/coverall/coveralls-upload.json
