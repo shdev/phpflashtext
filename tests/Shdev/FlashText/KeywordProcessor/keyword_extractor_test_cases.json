@@ -467,5 +467,14 @@
         "explanation": "",
         "keywords": ["spring framework"],
         "keywords_case_sensitive": ["spring framework"]
+    },
+    {
+        "sentence": "what the heck is java",
+        "keyword_dict": {
+            "java": ["javanese"]
+        },
+        "explanation": "prefix match at the end of the sentence",
+        "keywords": [],
+        "keywords_case_sensitive": []
     }
 ]

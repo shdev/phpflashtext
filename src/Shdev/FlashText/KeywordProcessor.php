@@ -561,6 +561,8 @@ class KeywordProcessor
                 if (isset($currentDict[self::TREE_LEAF])) {
                     $sequenceFound = $currentDict[self::TREE_LEAF];
                     $newSentence .= $sequenceFound;
+                } elseif ($currentWord) {
+                    $newSentence .= $currentWord;
                 }
             }
             ++$idx;
