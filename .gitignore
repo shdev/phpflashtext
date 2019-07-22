@@ -65,3 +65,4 @@ fabric.properties
 var/logs/phpunit
 vendor
 composer.lock
+var/logs/coverall

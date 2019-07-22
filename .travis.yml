@@ -4,7 +4,6 @@ php:
   - '7.0'
   - '7.1'
   - '7.2'
-  - nightly
 
 git:
   depth: 1
@@ -17,5 +16,7 @@ install:
   - composer install
 
 script:
-  - vendor/bin/phpunit --no-coverage tests/Shdev/FlashText/KeywordProcessor/
+  - mkdir -p var/logs/{phpunit,coverall}
+  - vendor/bin/phpunit --coverage-clover var/logs/phpunit/clover.xml tests/Shdev/FlashText/KeywordProcessor/
+  - '[ -f var/logs/phpunit/clover.xml ] && vendor/bin/php-coveralls --coverage_clover var/logs/phpunit/clover.xml -o var/logs/coverall/coveralls-upload.json'
   - php tests/Shdev/FlashText/flashtext_vs_regex.php
