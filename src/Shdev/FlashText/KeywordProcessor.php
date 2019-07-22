@@ -366,7 +366,7 @@ class KeywordProcessor
         $resetCurrentDict = false;
         $idx = 0;
         $sentenceLen = strlen($sentence);
-
+        $decreaseIndex = false;
         while ($idx < $sentenceLen) {
             $char = $sentence[$idx];
             if (!in_array($char, $this->nonWordBoundaries, true)) {
@@ -412,6 +412,8 @@ class KeywordProcessor
                     $currentDict = &$this->keywordTrieDict;
                     if ($longestSequenceFound) {
                         $keywordsExtracted[] = [$longestSequenceFound, $sequenceStartPos, $idx];
+                        // Decrease index to match a possible candidate which starts immediately
+                        $decreaseIndex = true;
                     }
                     $resetCurrentDict= true;
                 } else {
@@ -444,7 +446,13 @@ class KeywordProcessor
             if ($resetCurrentDict) {
                 $resetCurrentDict = false;
                 $sequenceStartPos = $idx;
+                $longestSequenceFound = '';
             }
+            if ($decreaseIndex) {
+                $decreaseIndex = false;
+                $idx--;
+            }
+
         }
 
         if ($spanInfo) {
