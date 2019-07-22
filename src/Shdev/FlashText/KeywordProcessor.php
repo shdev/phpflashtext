@@ -451,6 +451,7 @@ class KeywordProcessor
             if ($decreaseIndex) {
                 $decreaseIndex = false;
                 $idx--;
+                $sequenceStartPos = $idx;
             }
 
         }

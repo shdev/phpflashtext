@@ -27,8 +27,10 @@ class NoBordersTest extends \PHPUnit_Framework_TestCase
 
         $sentence = 'word1word2word3';
 
-        $keywordsExtracted = $keywordProcessor->extractKeywords($sentence);
+        $keywordsExtracted = $keywordProcessor->extractKeywords($sentence, true);
 
-        $this->assertEquals(['word1', 'word2', 'word3'], $keywordsExtracted);
+        $this->assertEquals(['word1', 0, 5], $keywordsExtracted[0]);
+        $this->assertEquals(['word2', 5, 10], $keywordsExtracted[1]);
+        $this->assertEquals(['word3', 10, 15], $keywordsExtracted[2]);
     }
 }
