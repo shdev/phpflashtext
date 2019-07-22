@@ -18,5 +18,5 @@ install:
 script:
   - mkdir -p var/logs/{phpunit,coverall}
   - vendor/bin/phpunit --coverage-clover var/logs/phpunit/clover.xml tests/Shdev/FlashText/KeywordProcessor/
-  - '[ -f var/logs/phpunit/clover.xml ] && vendor/bin/php-coveralls --coverage_clover var/logs/phpunit/clover.xml -o var/logs/coverall/coveralls-upload.json'
+  - '[ -f var/logs/phpunit/clover.xml ] && vendor/bin/php-coveralls --coverage_clover var/logs/phpunit/clover.xml -o var/logs/coverall/coveralls-upload.json || echo coverage data could not created'
   - php tests/Shdev/FlashText/flashtext_vs_regex.php
